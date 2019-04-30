@@ -2,6 +2,7 @@ import { Path } from './path';
 import { Scope } from './scope';
 
 export enum BindingKind {
+  MONGOOSEMESSAGE = "mongooseMessage",
   MESSAGE = 'message',
   ENUM = 'enum',
 }

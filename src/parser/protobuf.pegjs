@@ -426,6 +426,15 @@ Message
     }
   }
 
+MongooseMessage
+  = "message Mongoose" _ name:MessageName __ body:MessageBody {
+    return {
+      type: 'MongooseMessage',
+      name,
+      body,
+    }
+  }
+
 MessageBody
   = "{" body:(__ (Field / Enum / Message / Option / Oneof / MapField / Reversed / EmptyStatement) __)* "}" {
     return body ? body.map(i => i[1]) : [];

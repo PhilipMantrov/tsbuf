@@ -58,6 +58,15 @@ export const semanticVisitor: Visitor = {
     }
     popScope(path);
   },
+  MongooseMessage(path: Path, walk: WalkAction): void {
+    const message = path.node as Message;
+    walk(message.name);
+    pushScope(path);
+    for (const node of message.body) {
+      walk(node);
+    }
+    popScope(path);
+  },
   Oneof(path: Path, walk: WalkAction): void {
     const oneof = path.node as Oneof;
     walk(oneof.name);

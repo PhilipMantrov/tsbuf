@@ -7,6 +7,7 @@ export function typeMapping(typeName: Type): string {
 
 export function keywordTypeMapping(typeName: KeywordType): string {
   const map: any = {
+    Any: 'any',
     bool: 'boolean',
     string: 'string',
     bytes: 'string',
@@ -27,6 +28,31 @@ export function keywordTypeMapping(typeName: KeywordType): string {
     double: 'number',
   };
   return map[typeName.typeName] || 'any';
+}
+
+export function keywordMongooseTypeMapping(typeName: KeywordType): string {
+  const map: any = {
+    Any: 'Mixed',
+    bool: 'Boolean',
+    string: 'String',
+    bytes: 'Buffer',
+
+    int32: 'Number',
+    fixed32: 'Number',
+    uint32: 'Number',
+    sint32: 'Number',
+    sfixed32: 'Number',
+
+    int64: 'String',
+    fixed64: 'String',
+    uint64: 'String',
+    sint64: 'String',
+    sfixed64: 'String',
+
+    float: 'Number',
+    double: 'Number',
+  };
+  return map[typeName.typeName] || 'Mixed';
 }
 
 export function extendedTypeMapping(typeName: ExtendedType): string {
