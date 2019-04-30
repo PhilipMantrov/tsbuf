@@ -1,5 +1,4 @@
-import { camelCase } from '../../util/string';
-import { typeMapping } from '../../util/type';
+import { mongooseTypeMapping, typeMapping } from '../../util/type';
 import { GenerateMode } from './const';
 
 export interface InterfaceTreeNormalField {
@@ -38,8 +37,22 @@ function getType(field: InterfaceTreeField, it: InterfaceTree): string {
   return fullName;
 }
 
+function getMongooseType(field: InterfaceTreeField, it: InterfaceTree): string {
+  const scopeNames = it.children.map(c => c.node.name);
+  const name = mongooseTypeMapping(field.typeName as KeywordType);
+  let fullName = scopeNames.indexOf(name) === -1 ? name : `${it.node.name}.${name}`;
+  if (field.repeated) {
+    fullName += '[]';
+  }
+  return fullName;
+}
+
 function generateNormalField(f: InterfaceTreeNormalField, it: InterfaceTree): string {
   return `${f.name}${f.optional ? '?' : ''}: ${getType(f, it)};`;
+}
+
+function generateMongooseField(f: InterfaceTreeNormalField, it: InterfaceTree): string {
+  return `${f.name}: ${getMongooseType(f, it)},`;
 }
 
 function generateMapField(f: InterfaceTreeMapField, it: InterfaceTree): string {
@@ -48,26 +61,42 @@ function generateMapField(f: InterfaceTreeMapField, it: InterfaceTree): string {
   };`;
 }
 
-export const generateInterface = (mode: GenerateMode) => (i: InterfaceTree): string =>
-  `
-${mode === GenerateMode.Global ? '' : 'export '}interface ${i.node.name} {
-  ${i.node.fields
-    .map((f: InterfaceTreeField) => {
+export const generateInterface = (mode: GenerateMode) => (i: InterfaceTree): string => {
+  const mongooseRegex = /Mongoose/;
+  if (mongooseRegex.test(i.node.name)) {
+    return `
+    ${mode === GenerateMode.Global ? '' : 'export '}const ${i.node.name} = { 
+        ${i.node.fields.map((f: InterfaceTreeField) => {
       if (f.type === 'normal') {
-        return generateNormalField(f, i);
+        return generateMongooseField(f, i);
       }
       if (f.type === 'map') {
         return generateMapField(f, i);
       }
-      return '';
-    })
-    .join('')}
+    })}
+     }`;
+  }
+    return   `
+    ${mode === GenerateMode.Global ? '' : 'export '}interface ${i.node.name} { 
+    ${i.node.fields
+      .map((f: InterfaceTreeField) => {
+        if (f.type === 'normal') {
+          return generateNormalField(f, i);
+        }
+        if (f.type === 'map') {
+          return generateMapField(f, i);
+        }
+        return '';
+      })
+      .join('')}
 }
 
 ${
-    i.children.length <= 0
-      ? ''
-      : `${mode === GenerateMode.Global ? 'declare' : 'export'} namespace ${i.node.name} {
+      i.children.length <= 0
+        ? ''
+        : `${mode === GenerateMode.Global ? 'declare' : 'export'} namespace ${i.node.name} {
   ${i.children.map(j => generateInterface(GenerateMode.Module)(j)).join('\n')}
 }`
-  }`;
+      }`
+};
+
