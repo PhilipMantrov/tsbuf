@@ -25,11 +25,11 @@ export function keywordTypeMapping(typeName: KeywordType): string {
     sint32: 'number',
     sfixed32: 'number',
 
-    int64: 'string',
-    fixed64: 'string',
-    uint64: 'string',
-    sint64: 'string',
-    sfixed64: 'string',
+    int64: 'number',
+    fixed64: 'number',
+    uint64: 'number',
+    sint64: 'number',
+    sfixed64: 'number',
 
     float: 'number',
     double: 'number',
