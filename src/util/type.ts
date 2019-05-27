@@ -5,6 +5,13 @@ export function typeMapping(typeName: Type): string {
   return extendedTypeMapping(typeName);
 }
 
+export function mongooseTypeMapping(typeName: Type): string {
+  if (typeName.type === 'KeywordType') {
+    return keywordMongooseTypeMapping(typeName);
+  }
+  return extendedTypeMapping(typeName);
+}
+
 export function keywordTypeMapping(typeName: KeywordType): string {
   const map: any = {
     Any: 'any',
