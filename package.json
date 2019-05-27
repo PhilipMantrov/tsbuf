@@ -1,6 +1,6 @@
 {
   "name": "tsbuf-nestjs",
-  "version": "0.1.16",
+  "version": "0.1.18",
   "description": "Generate TypeScript enum and interface with proto buffer.",
   "main": "dist/index.js",
   "bin": "tsbuf",
